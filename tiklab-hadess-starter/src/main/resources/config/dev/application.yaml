@@ -16,7 +16,7 @@ DATA_HOME: ${user.home}/tiklab/thoughtware-hadess
 #dal config for mysql jdbc
 jdbc:
   driverClassName: org.postgresql.Driver
-  url: jdbc:postgresql://172.10.1.10:5432/tiklab_xpack?currentSchema=public&stringtype=unspecified
+  url: jdbc:postgresql://172.10.1.10:5432/tiklab_hadess?currentSchema=public&stringtype=unspecified
   username: postgres
   #driverClassName: com.mysql.cj.jdbc.Driver
   #url: jdbc:mysql://172.10.1.10:3306/tiklab_hadess?characterEncoding=utf8&useSSL=false
@@ -48,6 +48,7 @@ auth:
   type: local
   soular:
     address: http://192.168.10.15:8080
+  expire: 86400 # 过期时间，单位秒，默认1天
 
 external:
   url:

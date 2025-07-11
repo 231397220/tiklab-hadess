@@ -9,7 +9,7 @@ import io.tiklab.toolkit.beans.annotation.Mapper;
 import io.tiklab.toolkit.beans.annotation.Mapping;
 import io.tiklab.toolkit.beans.annotation.Mappings;
 import io.tiklab.toolkit.join.annotation.Join;
-import io.tiklab.toolkit.join.annotation.JoinQuery;
+import io.tiklab.toolkit.join.annotation.JoinField;
 
 import javax.validation.constraints.NotNull;
 import java.sql.Timestamp;
@@ -28,7 +28,7 @@ public class TimeTaskInstance extends BaseModel {
     @Mappings({
             @Mapping(source = "timeTask.id",target = "timeTaskId")
     })
-    @JoinQuery(key = "id")
+    @JoinField(key = "id")
     private TimeTask timeTask;
 
     @ApiProperty(name="execObjectId",desc="执行对象的id")

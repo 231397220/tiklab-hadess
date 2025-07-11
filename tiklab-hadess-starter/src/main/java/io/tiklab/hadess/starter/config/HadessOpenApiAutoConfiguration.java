@@ -4,13 +4,12 @@ package io.tiklab.hadess.starter.config;
 import io.tiklab.openapi.config.AllowConfig;
 import io.tiklab.openapi.config.AllowConfigBuilder;
 import io.tiklab.openapi.config.OpenApiConfig;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class OpenApiAutoConfiguration {
+public class HadessOpenApiAutoConfiguration {
     @Value("${soular.address:null}")
     String authAddress;
 

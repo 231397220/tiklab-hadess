@@ -7,7 +7,7 @@ import io.tiklab.toolkit.beans.annotation.Mapping;
 import io.tiklab.toolkit.beans.annotation.Mappings;
 import io.tiklab.core.BaseModel;
 import io.tiklab.toolkit.join.annotation.Join;
-import io.tiklab.toolkit.join.annotation.JoinQuery;
+import io.tiklab.toolkit.join.annotation.JoinField;
 import io.tiklab.postin.annotation.ApiModel;
 import io.tiklab.postin.annotation.ApiProperty;
 
@@ -31,7 +31,7 @@ public class LibraryVersion extends BaseModel {
     @Mappings({
             @Mapping(source = "library.id",target = "libraryId")
     })
-    @JoinQuery(key = "id")
+    @JoinField(key = "id")
     private Library library;
 
     @NotNull
@@ -39,7 +39,7 @@ public class LibraryVersion extends BaseModel {
     @Mappings({
             @Mapping(source = "repository.id",target = "repositoryId")
     })
-    @JoinQuery(key = "id")
+    @JoinField(key = "id")
     private Repository repository;
 
     @NotNull

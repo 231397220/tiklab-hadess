@@ -5,7 +5,7 @@ import io.tiklab.toolkit.beans.annotation.Mapper;
 import io.tiklab.toolkit.beans.annotation.Mapping;
 import io.tiklab.toolkit.beans.annotation.Mappings;
 import io.tiklab.core.BaseModel;
-import io.tiklab.toolkit.join.annotation.JoinQuery;
+import io.tiklab.toolkit.join.annotation.JoinField;
 import io.tiklab.postin.annotation.ApiModel;
 import io.tiklab.postin.annotation.ApiProperty;
 
@@ -45,7 +45,7 @@ public class Repository extends BaseModel {
     @Mappings({
             @Mapping(source = "storage.id",target = "storageId")
     })
-    @JoinQuery(key = "id")
+    @JoinField(key = "id")
     private Storage storage;
 
 

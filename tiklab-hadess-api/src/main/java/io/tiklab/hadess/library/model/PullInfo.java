@@ -6,7 +6,7 @@ import io.tiklab.toolkit.beans.annotation.Mapping;
 import io.tiklab.toolkit.beans.annotation.Mappings;
 import io.tiklab.core.BaseModel;
 import io.tiklab.toolkit.join.annotation.Join;
-import io.tiklab.toolkit.join.annotation.JoinQuery;
+import io.tiklab.toolkit.join.annotation.JoinField;
 import io.tiklab.postin.annotation.ApiModel;
 import io.tiklab.postin.annotation.ApiProperty;
 import io.tiklab.user.user.model.User;
@@ -30,7 +30,7 @@ public class PullInfo extends BaseModel {
     @Mappings({
             @Mapping(source = "library.id",target = "libraryId")
     })
-    @JoinQuery(key = "id")
+    @JoinField(key = "id")
     private Library library;
 
     @NotNull
@@ -38,7 +38,7 @@ public class PullInfo extends BaseModel {
     @Mappings({
             @Mapping(source = "libraryVersion.id",target = "libraryVersionId")
     })
-    @JoinQuery(key = "id")
+    @JoinField(key = "id")
     private LibraryVersion libraryVersion;
 
 
@@ -47,7 +47,7 @@ public class PullInfo extends BaseModel {
     @Mappings({
             @Mapping(source = "user.id",target = "userId")
     })
-    @JoinQuery(key = "id")
+    @JoinField(key = "id")
     private User user;
 
     @ApiProperty(name="pullCreate",desc="拉取时间")

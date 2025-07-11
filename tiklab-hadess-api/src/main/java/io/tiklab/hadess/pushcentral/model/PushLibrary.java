@@ -9,7 +9,7 @@ import io.tiklab.toolkit.beans.annotation.Mapper;
 import io.tiklab.toolkit.beans.annotation.Mapping;
 import io.tiklab.toolkit.beans.annotation.Mappings;
 import io.tiklab.toolkit.join.annotation.Join;
-import io.tiklab.toolkit.join.annotation.JoinQuery;
+import io.tiklab.toolkit.join.annotation.JoinField;
 
 import java.sql.Timestamp;
 
@@ -37,7 +37,7 @@ public class PushLibrary extends BaseModel {
     @Mappings({
             @Mapping(source = "library.id",target = "libraryId")
     })
-    @JoinQuery(key = "id")
+    @JoinField(key = "id")
     private Library library;
 
     @ApiProperty(name="lastPushTime",desc="最后推送时间")

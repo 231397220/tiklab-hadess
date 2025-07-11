@@ -48,6 +48,7 @@ auth:
   type: soular
   soular:
     address: http://e.tiklab.net
+  expire: 86400 # 过期时间，单位秒，默认1天
 
 external:
   url: http://e.hadess.tiklab.net
