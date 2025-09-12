@@ -39,7 +39,7 @@ public class DockerUploadController {
     public void dockerPush(HttpServletRequest request, HttpServletResponse response) throws Exception {
         String contextPath = request.getRequestURI();
 
-
+        Enumeration<String> names = request.getHeaderNames();
         String repositoryPath =contextPath.substring(contextPath.indexOf("/", 1) + 1);
 
         String method = request.getMethod();
@@ -61,11 +61,11 @@ public class DockerUploadController {
                 boolean verify = yamlDataMaService.getVerify();
                 if (!verify){
                     DockerResponse.dockerAccountSuccess(response);
-                    return;
+                }else {
+                    String authorization = request.getHeader("Authorization");
+                    Result<String> userCheck = dockerUploadService.userCheck(authorization);
+                    DockerResponse.dockerAccountVerify(userCheck,response);
                 }
-                String authorization = request.getHeader("Authorization");
-                Result<String> userCheck = dockerUploadService.userCheck(authorization);
-                DockerResponse.dockerAccountVerify(userCheck,response);
             }
         }
 

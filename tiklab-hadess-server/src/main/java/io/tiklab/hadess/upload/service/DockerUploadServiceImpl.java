@@ -327,13 +327,17 @@ public class DockerUploadServiceImpl implements DockerUploadService {
             libraryVersion.setLibraryType("docker");
            // libraryVersion.setSize(aLong);
 
-            //用户信息
-            String basic = authorization.replace("Basic", "").trim();
-            byte[] decode = Base64.getDecoder().decode(basic);
-            //用户信息
-            String userData = new String(decode, "UTF-8");
-            String[] split = userData.split(":");
-            libraryVersion.setPusher(split[0]);
+            boolean verify = yamlDataMaService.getVerify();
+            if (verify){
+                //用户信息
+                String basic = authorization.replace("Basic", "").trim();
+                byte[] decode = Base64.getDecoder().decode(basic);
+                //用户信息
+                String userData = new String(decode, "UTF-8");
+                String[] split = userData.split(":");
+                libraryVersion.setPusher(split[0]);
+            }
+
             String libraryVersionId = versionService.createLibraryVersionSplice(libraryVersion,fileName);
             libraryVersion.setId(libraryVersionId);
 
