@@ -99,4 +99,24 @@ public class HadessFinal {
     /*---Nuget----*/
     //查询可用制品列表
     public static final String NUGET_FIND_QUERY ="https://azuresearch-ea.nuget.org/query";
+
+
+    /*----nexus---*/
+
+    //查询仓库列表
+    public static final String NEXUS_FIND_REP ="service/rest/v1/repositories";
+
+    //查询制品
+    public static final String NEXUS_FIND_LIBRARY ="service/rest/v1/components";
+
+    //查询制品文件
+    public static final String NEXUS_FIND_LIBRARY_FILE ="service/rest/v1/assets";
+
+
+
+    public static final String RPM_PACKAGE ="/Packages";
+
+    public static final String REPO_MD_PATH ="/repodata/repomd.xml";
+    public static final String RPM_FILE_PATH ="/repodata/rpm-filelists.xml";
+    public static final String RPM_PRIMARY_PATH ="/repodata/rpm-primary.xml";
 }

@@ -98,7 +98,6 @@ public class PushGroupServiceImpl implements PushGroupService {
     public PushGroup findPushGroup(@NotNull String id) {
         PushGroup pushGroup = findOne(id);
 
-        joinTemplate.joinQuery(pushGroup);
 
         return pushGroup;
     }
@@ -109,7 +108,6 @@ public class PushGroupServiceImpl implements PushGroupService {
 
         List<PushGroup> pushGroupList =  BeanMapper.mapList(pushGroupEntityList,PushGroup.class);
 
-        joinTemplate.joinQuery(pushGroupList);
 
         return pushGroupList;
     }
@@ -143,7 +141,6 @@ public class PushGroupServiceImpl implements PushGroupService {
 
             }
         }
-        joinTemplate.joinQuery(pushGroupList);
         return pushGroupList;
     }
 
@@ -152,8 +149,6 @@ public class PushGroupServiceImpl implements PushGroupService {
         Pagination<PushGroupEntity>  pagination = pushGroupDao.findPushGroupPage(pushGroupQuery);
 
         List<PushGroup> pushGroupList = BeanMapper.mapList(pagination.getDataList(),PushGroup.class);
-
-        joinTemplate.joinQuery(pushGroupList);
 
         return PaginationBuilder.build(pagination,pushGroupList);
     }

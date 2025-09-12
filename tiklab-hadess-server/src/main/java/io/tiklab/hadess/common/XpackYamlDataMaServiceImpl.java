@@ -1,6 +1,7 @@
 package io.tiklab.hadess.common;
 
 import io.tiklab.toolkit.context.AppContext;
+import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -26,8 +27,11 @@ public class XpackYamlDataMaServiceImpl implements XpackYamlDataMaService{
     String environment;
 
 
-    @Value("${visible.address:null}")
+    @Value("${external.url:null}")
     String visibleAddress;
+
+    @Value("${verify.state:null}")
+    String verifyState;
 
     @Override
     public String uploadAddress() {
@@ -50,6 +54,14 @@ public class XpackYamlDataMaServiceImpl implements XpackYamlDataMaService{
     @Override
     public String schemaName() {
         return "public";
+    }
+
+    @Override
+    public boolean getVerify() {
+        if (("false").equals(verifyState)){
+            return false;
+        }
+        return true;
     }
 
 
@@ -108,7 +120,7 @@ public class XpackYamlDataMaServiceImpl implements XpackYamlDataMaService{
 
     @Override
     public String findVisitAddress() {
-        if (("null".equals(visibleAddress))){
+        if (StringUtils.isBlank(visibleAddress)){
             return null;
         }
         return visibleAddress;

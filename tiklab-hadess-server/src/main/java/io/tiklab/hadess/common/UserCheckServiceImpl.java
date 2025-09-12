@@ -3,10 +3,10 @@ package io.tiklab.hadess.common;
 import io.tiklab.eam.common.context.LoginContext;
 import io.tiklab.eam.common.model.EamTicket;
 import io.tiklab.eam.passport.user.model.UserPassport;
-import io.tiklab.eam.passport.user.service.UserPassportService;
+import io.tiklab.eam.passport.user.service.UserPassportProcessor;
 import io.tiklab.user.user.model.User;
 import io.tiklab.user.user.model.UserQuery;
-import io.tiklab.user.user.service.UserService;
+import io.tiklab.user.user.service.UserProcessor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,10 +20,12 @@ import java.util.List;
 public class UserCheckServiceImpl implements UserCheckService {
 
     @Autowired
-    UserService userService;
+    UserProcessor userProcessor;
 
     @Autowired
-    UserPassportService userPassportService;
+    UserPassportProcessor userPassportProcessor;
+
+
 
     @Override
     public String mavenUserCheck(String userData) {
@@ -31,7 +33,7 @@ public class UserCheckServiceImpl implements UserCheckService {
         if (("hadess".equals(userData))){
             //maven制品库里面上传用户校验用户信息默认用的xpack
             String loginId = LoginContext.getLoginId();
-            userName = userService.findUser(loginId).getName();
+            userName = userProcessor.findUser(loginId).getName();
         }else {
             String[]  userObject=userData.split(":");
             userName = userObject[0];
@@ -41,7 +43,7 @@ public class UserCheckServiceImpl implements UserCheckService {
             userPassport.setAccount(userName);
             userPassport.setPassword(password);
             userPassport.setDirId("1");
-            userPassportService.validLogin(userPassport);
+            userPassportProcessor.validLogin(userPassport);
         }
         return userName;
     }
@@ -52,7 +54,7 @@ public class UserCheckServiceImpl implements UserCheckService {
         userPassport.setAccount(userName);
         userPassport.setPassword(password);
         userPassport.setDirId("1");
-        EamTicket eamTicket = userPassportService.login(userPassport);
+        EamTicket eamTicket = userPassportProcessor.login(userPassport);
         return eamTicket.getTicket();
     }
 
@@ -60,7 +62,7 @@ public class UserCheckServiceImpl implements UserCheckService {
     public List<User> npmUserCheckByName(String userName) {
         UserQuery userQuery = new UserQuery();
         userQuery.setName(userName);
-        List<User> userList = userService.findUserList(userQuery);
+        List<User> userList = userProcessor.findUserList(userQuery);
         return userList;
     }
 
@@ -74,7 +76,7 @@ public class UserCheckServiceImpl implements UserCheckService {
         userPassport.setAccount(userName);
         userPassport.setPassword(password);
         userPassport.setDirId("1");
-        userPassportService.validLogin(userPassport);
+        userPassportProcessor.validLogin(userPassport);
     }
 
     @Override
@@ -92,7 +94,7 @@ public class UserCheckServiceImpl implements UserCheckService {
         userPassport.setAccount(userName);
         userPassport.setPassword(password);
         userPassport.setDirId("1");
-        userPassportService.validLogin(userPassport);
+        userPassportProcessor.validLogin(userPassport);
         return userName;
     }
 }

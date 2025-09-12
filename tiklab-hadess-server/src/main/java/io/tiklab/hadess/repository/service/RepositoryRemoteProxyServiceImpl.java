@@ -2,6 +2,10 @@ package io.tiklab.hadess.repository.service;
 
 import io.tiklab.dal.jpa.criterial.condition.DeleteCondition;
 import io.tiklab.dal.jpa.criterial.conditionbuilder.DeleteBuilders;
+import io.tiklab.hadess.common.FileUtil;
+import io.tiklab.hadess.common.HadessFinal;
+import io.tiklab.hadess.common.RepositoryUtil;
+import io.tiklab.hadess.common.XpackYamlDataMaService;
 import io.tiklab.hadess.repository.model.RemoteProxy;
 import io.tiklab.hadess.repository.model.RemoteProxyQuery;
 import io.tiklab.hadess.repository.model.RepositoryRemoteProxy;
@@ -15,10 +19,19 @@ import io.tiklab.toolkit.join.JoinTemplate;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.File;
+import java.io.IOException;
 import java.sql.Timestamp;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -37,6 +50,9 @@ public class RepositoryRemoteProxyServiceImpl implements RepositoryRemoteProxySe
 
     @Autowired
     RemoteProxyServiceImpl remoteProxyService;
+    
+    @Autowired
+    XpackYamlDataMaService yamlDataMaService;
 
     @Override
     public String createRepositoryRemoteProxy(@NotNull @Valid RepositoryRemoteProxy repositoryRemoteProxy) {
@@ -57,7 +73,15 @@ public class RepositoryRemoteProxyServiceImpl implements RepositoryRemoteProxySe
             return null;
         }
 
-        return repositoryRemoteProxyDao.createRepositoryRemoteProxy(repositoryRemoteProxyEntity);
+        String remoteProxy = repositoryRemoteProxyDao.createRepositoryRemoteProxy(repositoryRemoteProxyEntity);
+
+        //制品库类型为rmp时同步代理制品索引文件
+        String type = repositoryRemoteProxy.getRepository().getType();
+        if (("rpm").equals(type)){
+            syncRpmIndex(repositoryRemoteProxy.getRepository().getId(),repositoryRemoteProxy.getRemoteProxy().getId());
+        }
+
+        return remoteProxy;
     }
 
     @Override
@@ -99,7 +123,7 @@ public class RepositoryRemoteProxyServiceImpl implements RepositoryRemoteProxySe
     public RepositoryRemoteProxy findRepositoryRemoteProxy(@NotNull String id) {
         RepositoryRemoteProxy repositoryRemoteProxy = findOne(id);
 
-        joinTemplate.joinQuery(repositoryRemoteProxy);
+        joinTemplate.joinQuery(repositoryRemoteProxy,new String[]{"repository","remoteProxy"});
 
         return repositoryRemoteProxy;
     }
@@ -110,7 +134,7 @@ public class RepositoryRemoteProxyServiceImpl implements RepositoryRemoteProxySe
 
         List<RepositoryRemoteProxy> repositoryRemoteProxyList =  BeanMapper.mapList(repositoryRemoteProxyEntityList,RepositoryRemoteProxy.class);
 
-        joinTemplate.joinQuery(repositoryRemoteProxyList);
+        joinTemplate.joinQuery(repositoryRemoteProxyList,new String[]{"repository","remoteProxy"});
 
         return repositoryRemoteProxyList;
     }
@@ -121,7 +145,7 @@ public class RepositoryRemoteProxyServiceImpl implements RepositoryRemoteProxySe
 
         List<RepositoryRemoteProxy> repositoryRemoteProxyList = BeanMapper.mapList(repositoryRemoteProxyEntityList,RepositoryRemoteProxy.class);
 
-        joinTemplate.joinQuery(repositoryRemoteProxyList);
+        joinTemplate.joinQuery(repositoryRemoteProxyList,new String[]{"repository","remoteProxy"});
 
         return repositoryRemoteProxyList;
     }
@@ -142,7 +166,7 @@ public class RepositoryRemoteProxyServiceImpl implements RepositoryRemoteProxySe
         List<RepositoryRemoteProxyEntity> remoteProxyEntities = repositoryRemoteProxyDao.findRemoteProxyRepId(repositoryId);
 
         List<RepositoryRemoteProxy> repositoryRemoteProxyList = BeanMapper.mapList(remoteProxyEntities,RepositoryRemoteProxy.class);
-        joinTemplate.joinQuery(repositoryRemoteProxyList);
+        joinTemplate.joinQuery(repositoryRemoteProxyList,new String[]{"repository","remoteProxy"});
 
         return repositoryRemoteProxyList;
     }
@@ -156,7 +180,7 @@ public class RepositoryRemoteProxyServiceImpl implements RepositoryRemoteProxySe
             List<RepositoryRemoteProxy> repositoryRemoteProxyList = BeanMapper.mapList(agencyByRpyIdAndPath,RepositoryRemoteProxy.class);
             if (CollectionUtils.isNotEmpty(repositoryRemoteProxyList)){
                 RepositoryRemoteProxy repositoryRemoteProxy = repositoryRemoteProxyList.get(0);
-                joinTemplate.joinQuery(repositoryRemoteProxyList);
+                joinTemplate.joinQuery(repositoryRemoteProxyList,new String[]{"repository","remoteProxy"});
                 return repositoryRemoteProxy;
             }
         }
@@ -170,9 +194,54 @@ public class RepositoryRemoteProxyServiceImpl implements RepositoryRemoteProxySe
 
         List<RepositoryRemoteProxy> proxyList = BeanMapper.mapList(agencyList,RepositoryRemoteProxy.class);
 
-        joinTemplate.joinQuery(proxyList);
+        joinTemplate.joinQuery(proxyList,new String[]{"repository","remoteProxy"});
 
 
         return proxyList;
+    }
+
+
+
+    //同步rpm索引文件
+    @Override
+    public void syncRpmIndex(String repoId,String remoteId){
+        RemoteProxy proxy = remoteProxyService.findOne(remoteId);
+
+        try {
+
+            String path = proxy.getAgencyUrl() + HadessFinal.REPO_MD_PATH;
+            String restTemplate = RepositoryUtil.getRestTemplate(path);
+
+            //本地存储位置
+            String repoPath = yamlDataMaService.repositoryAddress() + "/" + repoId;
+            String indexFilePath = repoPath+HadessFinal.REPO_MD_PATH;
+
+            //写入索引文件
+            FileUtil.writeStringToFile(restTemplate,indexFilePath);
+
+            //写入软件包信息、文件列表、软件包分组等
+            File xmlFile = new File(indexFilePath);
+            DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder dBuilder = dbFactory.newDocumentBuilder();
+            Document doc = dBuilder.parse(xmlFile);
+            Element rootElement = doc.getDocumentElement();
+            NodeList dataList = rootElement.getElementsByTagName("data");
+            for (int i = 0; i < dataList.getLength(); i++) {
+                Node dataItems = dataList.item(i);
+                Element dataElement = (Element) dataItems;
+                NodeList locationList =dataElement.getElementsByTagName("location");
+                Element locationItem = (Element)locationList.item(0);
+                String href = locationItem.getAttribute("href");
+
+                String filePath = proxy.getAgencyUrl() + "/"+href;
+                ResponseEntity<byte[]> fileData = RepositoryUtil.getRestTemplateByte(filePath);
+                byte[] dataBody = fileData.getBody();
+
+                String localFilePath = repoPath+"/"+href;
+                FileUtil.writeByteToFile(dataBody,localFilePath);
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }

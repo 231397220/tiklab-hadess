@@ -131,6 +131,15 @@ public interface LibraryFileService {
      */
     List<LibraryFile> findFileByReAndLibraryAndVer(String repositoryId,String libraryName,String version);
 
+
+    /**
+     * 通过制品库ids和文件名字查询 rpm使用
+     * @param repositoryId  制品库id
+     * @param fileName   文件名字
+     * @return Pagination <LibraryFileEntity>
+     */
+    LibraryFile findFileByRepoAndFileName(String[] repositoryId,String fileName);
+
     /**
      * 通过制品库和制品以及版本查询
      * @param repositoryId  制品库id
@@ -165,4 +174,6 @@ public interface LibraryFileService {
      * @param libraryFileQuery libraryFileQuery
      */
     List<String> findDockerLayers(LibraryFileQuery libraryFileQuery);
+
+
 }

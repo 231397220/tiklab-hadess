@@ -44,8 +44,6 @@ public class HandUploadController {
 
         try {
             InputStream inputStream = request.getInputStream();
-
-
             if ("POST".equals(method) || "PUT".equals(method)) {
 
                 Result<byte[]> result = downloadMavenService.mavenSubmit(repositoryPath, inputStream, "hadess");

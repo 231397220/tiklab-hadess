@@ -27,6 +27,5 @@ public class HadessApplication {
         SpringApplication.run(HadessApplication.class, args);
 
     }
-
 }
 

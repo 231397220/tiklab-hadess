@@ -6,7 +6,11 @@ import org.yaml.snakeyaml.DumperOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.introspector.BeanAccess;
 
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.io.*;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Map;
 
 public class UploadTool {
@@ -76,5 +80,35 @@ public class UploadTool {
         } catch (IOException e) {
             throw new RuntimeException("向"+filePath+"路径中写入yaml内容失败："+e);
         }
+    }
+
+    /**
+     * 生成基于HMAC-SHA256的签名
+     * @param fileSize 文件大小
+     * @param timestamp 当前时间戳
+     * @return 十六进制格式的签名
+     */
+   /* private String generateSignature(int fileSize, long timestamp) {
+        try {
+            String data = fileSize + ":" + timestamp;
+            Mac hmac = Mac.getInstance("HmacSHA256");
+            SecretKeySpec keySpec = new SecretKeySpec(serverKey.getBytes(), "HmacSHA256");
+            hmac.init(keySpec);
+
+            byte[] signatureBytes = hmac.doFinal(data.getBytes());
+            return bytesToHex(signatureBytes);
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
+            throw new SecurityException("Failed to generate signature", e);
+        }
+    }*/
+    /**
+     * 字节数组转十六进制字符串
+     */
+    private static String bytesToHex(byte[] bytes) {
+        StringBuilder sb = new StringBuilder();
+        for (byte b : bytes) {
+            sb.append(String.format("%02x", b));
+        }
+        return sb.toString();
     }
 }

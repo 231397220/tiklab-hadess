@@ -105,7 +105,7 @@ public class PushLibraryServiceImpl implements PushLibraryService {
 
         List<PushLibrary> pushLibraryList =  BeanMapper.mapList(pushLibraryEntityList,PushLibrary.class);
 
-        joinTemplate.joinQuery(pushLibraryList);
+        joinTemplate.joinQuery(pushLibraryList,new String[]{"library"});
         return pushLibraryList;
     }
 
@@ -113,7 +113,7 @@ public class PushLibraryServiceImpl implements PushLibraryService {
     public PushLibrary findPushLibrary(@NotNull String id) {
         PushLibrary pushLibrary = findOne(id);
 
-        joinTemplate.joinQuery(pushLibrary);
+        joinTemplate.joinQuery(pushLibrary,new String[]{"library"});
 
         return pushLibrary;
     }
@@ -124,8 +124,7 @@ public class PushLibraryServiceImpl implements PushLibraryService {
 
         List<PushLibrary> pushLibraryList =  BeanMapper.mapList(pushLibraryEntityList,PushLibrary.class);
 
-        joinTemplate.joinQuery(pushLibraryList);
-
+        joinTemplate.joinQuery(pushLibraryList,new String[]{"library"});
         return pushLibraryList;
     }
 
@@ -148,7 +147,7 @@ public class PushLibraryServiceImpl implements PushLibraryService {
 
         List<PushLibraryEntity> pushLibraryEntityList = pushLibraryDao.findPushLibraryList(pushLibraryQuery,LibraryIdList);
         List<PushLibrary> pushLibraryList = BeanMapper.mapList(pushLibraryEntityList,PushLibrary.class);
-        joinTemplate.joinQuery(pushLibraryList);
+        joinTemplate.joinQuery(pushLibraryList,new String[]{"library"});
         if (pushLibraryList.stream() != null) {
             pushLibraryList = pushLibraryList.stream().sorted(Comparator.comparing(a ->a.getLibrary().getName())).collect(Collectors.toList());
         }
@@ -184,7 +183,7 @@ public class PushLibraryServiceImpl implements PushLibraryService {
         List<PushLibrary> pushLibraryList = BeanMapper.mapList(pagination.getDataList(),PushLibrary.class);
 
 
-        joinTemplate.joinQuery(pushLibraryList);
+        joinTemplate.joinQuery(pushLibraryList,new String[]{"library"});
 
         return PaginationBuilder.build(pagination,pushLibraryList);
     }

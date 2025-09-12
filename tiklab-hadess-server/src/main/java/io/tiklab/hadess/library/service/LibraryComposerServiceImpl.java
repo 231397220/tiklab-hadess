@@ -81,7 +81,6 @@ public class LibraryComposerServiceImpl implements LibraryComposerService {
     public LibraryComposer findLibraryComposer(@NotNull String id) {
         LibraryComposer libraryComposer = findOne(id);
 
-        joinTemplate.joinQuery(libraryComposer);
 
         return libraryComposer;
     }
@@ -92,7 +91,6 @@ public class LibraryComposerServiceImpl implements LibraryComposerService {
 
         List<LibraryComposer> libraryComposerList =  BeanMapper.mapList(libraryComposerEntityList,LibraryComposer.class);
 
-        joinTemplate.joinQuery(libraryComposerList);
 
         return libraryComposerList;
     }
@@ -103,7 +101,6 @@ public class LibraryComposerServiceImpl implements LibraryComposerService {
 
         List<LibraryComposer> libraryComposerList = BeanMapper.mapList(libraryComposerEntityList,LibraryComposer.class);
 
-        joinTemplate.joinQuery(libraryComposerList);
 
         return libraryComposerList;
     }
@@ -114,7 +111,6 @@ public class LibraryComposerServiceImpl implements LibraryComposerService {
 
         List<LibraryComposer> libraryComposerList = BeanMapper.mapList(pagination.getDataList(),LibraryComposer.class);
 
-        joinTemplate.joinQuery(libraryComposerList);
 
         return PaginationBuilder.build(pagination,libraryComposerList);
     }

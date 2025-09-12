@@ -242,4 +242,11 @@ public class LibraryFileDao{
     }
 
 
+    public List<LibraryFileEntity> findFileByRepoAndFileName(String[] repositoryId, String fileName) {
+        QueryCondition queryCondition = QueryBuilders.createQuery(LibraryFileEntity.class)
+                .in("repositoryId", repositoryId)
+                .eq("fileName", fileName)
+                .get();
+        return   jpaTemplate.findList(queryCondition,LibraryFileEntity.class);
+    }
 }

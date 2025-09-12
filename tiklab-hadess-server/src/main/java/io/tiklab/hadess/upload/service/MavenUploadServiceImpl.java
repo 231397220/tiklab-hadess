@@ -9,7 +9,7 @@ import io.tiklab.core.Result;
 import io.tiklab.core.exception.ApplicationException;
 import io.tiklab.eam.passport.user.service.UserPassportService;
 import io.tiklab.rpc.annotation.Exporter;
-import io.tiklab.user.user.service.UserService;
+import io.tiklab.user.user.service.UserProcessor;
 import io.tiklab.hadess.repository.service.RepositoryGroupService;
 import io.tiklab.hadess.repository.service.RepositoryMavenService;
 import io.tiklab.hadess.repository.service.RepositoryRemoteProxyService;
@@ -70,7 +70,7 @@ public class MavenUploadServiceImpl implements MavenUploadService {
     RepositoryRemoteProxyService remoteProxyService;
 
     @Autowired
-    UserService userService;
+    UserProcessor userProcessor;
 
     @Autowired
     UserPassportService userPassportService;

@@ -6,15 +6,21 @@ import io.tiklab.dal.jpa.JpaTemplate;
 import io.tiklab.dal.jpa.criterial.condition.DeleteCondition;
 import io.tiklab.dal.jpa.criterial.condition.QueryCondition;
 import io.tiklab.dal.jpa.criterial.conditionbuilder.QueryBuilders;
+import io.tiklab.hadess.library.model.LibraryMaven;
 import io.tiklab.hadess.library.model.LibraryMavenQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Repository;
 import org.springframework.util.ObjectUtils;
 
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * LibraryMavenDao-maven制品数据访问
@@ -125,5 +131,20 @@ public class LibraryMavenDao{
                 .in("libraryId", libraryIds)
                 .get();
         return jpaTemplate.findList(queryCondition,LibraryMavenEntity.class);
+    }
+
+    public List<LibraryMaven> findLibraryMavenByRepId(String repId) {
+        NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(getJdbcTemplate());
+        Map<String, Object> paramMap = new HashMap<String, Object>();
+        paramMap.put("repositoryId",repId);
+
+        String sql="SELECT * FROM  pack_library_maven WHERE repository_id=:repositoryId";
+        List<LibraryMaven> query =jdbc.query(sql, paramMap, new BeanPropertyRowMapper(LibraryMaven.class));
+        return query;
+    }
+
+    public JdbcTemplate getJdbcTemplate() {
+
+        return jpaTemplate.getJdbcTemplate();
     }
 }

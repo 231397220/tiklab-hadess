@@ -109,27 +109,25 @@ public class LibraryServiceImpl implements LibraryService {
 
         Thread thread = new Thread() {
             public void run() {
-                String substring=null;
-                List<LibraryFile> libraryFileList = libraryFileService.findLibraryFileList(new LibraryFileQuery().setLibraryId(id));
-                if (CollectionUtils.isNotEmpty(libraryFileList)){
-                    String fileUrl = libraryFileList.get(0).getFileUrl();
-                    substring = fileUrl.substring(0, fileUrl.indexOf("/", fileUrl.indexOf("/") + 1));
 
-                }
+
                 libraryVersionService.deleteVersionByCondition("libraryId",id);
 
                 libraryFileService.deleteLibraryFileByCondition("libraryId",id);
 
                 pushLibraryService.deleteVersionByCondition("libraryId",id);
                 //删除文件
-                if (substring!=null){
-                    try {
-                        String folderPath = yamlDataMaService.repositoryAddress() + "/" + substring;
+                try {
+                    List<LibraryFile> libraryFileList = libraryFileService.findLibraryFileList(new LibraryFileQuery().setLibraryId(id));
+                    if (CollectionUtils.isNotEmpty(libraryFileList)){
+                        String fileUrl = libraryFileList.get(0).getFileUrl();
+                        //   substring = fileUrl.substring(0, fileUrl.indexOf("/", fileUrl.indexOf("/") + 1));
+                        String folderPath = yamlDataMaService.repositoryAddress() + "/" + fileUrl;
                         FileUtils.deleteDirectory(new File(folderPath));
-                    }catch (Exception e){
-                        logger.info("删除制品时删除文件失败:"+e.getMessage());
                     }
-                }
+                }catch (Exception e){
+                    logger.info("删除制品时删除文件失败:"+e.getMessage());
+            }
             }};
         thread.start();
     }
@@ -163,7 +161,7 @@ public class LibraryServiceImpl implements LibraryService {
     public Library findLibrary(@NotNull String id) {
         Library library = findOne(id);
 
-        joinTemplate.joinQuery(library);
+        joinTemplate.joinQuery(library,new String[]{"repository"});
 
         return library;
     }
@@ -174,8 +172,7 @@ public class LibraryServiceImpl implements LibraryService {
 
         List<Library> libraryList =  BeanMapper.mapList(libraryEntityList,Library.class);
 
-        joinTemplate.joinQuery(libraryList);
-
+        joinTemplate.joinQuery(libraryList,new String[]{"repository"});
         return libraryList;
     }
 
@@ -187,7 +184,7 @@ public class LibraryServiceImpl implements LibraryService {
 
         List<Library> libraryList = BeanMapper.mapList(libraryEntityList,Library.class);
 
-        joinTemplate.joinQuery(libraryList);
+        joinTemplate.joinQuery(libraryList,new String[]{"repository"});
 
         return libraryList;
     }
@@ -237,7 +234,7 @@ public class LibraryServiceImpl implements LibraryService {
         Library library=null;
         List<LibraryEntity> libraryEntityList = libraryDao.findLibraryByCondition(name,type,repId);
         List<Library> libraryList = BeanMapper.mapList(libraryEntityList,Library.class);
-        joinTemplate.joinQuery(libraryList);
+        joinTemplate.joinQuery(libraryList,new String[]{"repository"});
         if (CollectionUtils.isNotEmpty(libraryList)){
              library = libraryList.get(0);
         }
@@ -248,7 +245,7 @@ public class LibraryServiceImpl implements LibraryService {
     public List<Library> findLibraryByCondition(String name, String type, String[] rpyIds) {
         List<LibraryEntity> libraryEntityList = libraryDao.findLibraryByCondition(name,type,rpyIds);
         List<Library> libraryList = BeanMapper.mapList(libraryEntityList,Library.class);
-        joinTemplate.joinQuery(libraryList);
+        joinTemplate.joinQuery(libraryList,new String[]{"repository"});
 
         return libraryList;
     }
@@ -287,6 +284,9 @@ public class LibraryServiceImpl implements LibraryService {
     public Library createMvnLibrary(Repository repository, String libraryName, String groupId) {
         Library library = new Library();
         library.setLibraryType("maven");
+        library.setName(libraryName);
+        //创建制品信息
+        library.setRepository(repository);
 
         //查询制品是否存在
         List<LibraryEntity> libraryEntity = libraryDao.findLibraryByRpyIdAndName(repository.getId(), libraryName);
@@ -297,15 +297,14 @@ public class LibraryServiceImpl implements LibraryService {
             List<LibraryMaven> collect = libraryMavens.stream().filter(a -> (groupId).equals(a.getGroupId())).collect(Collectors.toList());
             if (CollectionUtils.isNotEmpty(collect)){
                 library.setId(collect.get(0).getLibrary().getId());
+                library.setOldVersion(libraryEntity.get(0).getNewVersion());
+                //更新制品
+                updateLibrary(libraryEntity.get(0));
+            }else {
+                String libraryId = this.createLibrary(library);
+                library.setId(libraryId);
             }
-            library.setOldVersion(libraryEntity.get(0).getNewVersion());
-
-            //更新制品
-            updateLibrary(libraryEntity.get(0));
         }else {
-            library.setName(libraryName);
-            //创建制品信息
-            library.setRepository(repository);
             String libraryId = this.createLibrary(library);
             library.setId(libraryId);
 
@@ -317,7 +316,7 @@ public class LibraryServiceImpl implements LibraryService {
     public List<Library> findLibraryList(String repositoryId, String name) {
         List<LibraryEntity> libraryByCond = libraryDao.findLibraryList(repositoryId, name);
         List<Library> libraryList = BeanMapper.mapList(libraryByCond,Library.class);
-        joinTemplate.joinQuery(libraryList);
+        joinTemplate.joinQuery(libraryList,new String[]{"repository"});
 
         return libraryList;
     }
@@ -354,7 +353,7 @@ public class LibraryServiceImpl implements LibraryService {
         List<Library> libraryList = BeanMapper.mapList(libraryEntityList,Library.class);
 
         List<Library> libraries = libraryList.stream().sorted(Comparator.comparing(Library::getName)).collect(Collectors.toList());
-        joinTemplate.joinQuery(libraries);
+        joinTemplate.joinQuery(libraryList,new String[]{"repository"});
         return libraries;
     }
 
@@ -391,7 +390,7 @@ public class LibraryServiceImpl implements LibraryService {
 
         List<Library> libraryList = BeanMapper.mapList(pagination.getDataList(),Library.class);
 
-        joinTemplate.joinQuery(libraryList);
+        joinTemplate.joinQuery(libraryList,new String[]{"repository"});
 
         return PaginationBuilder.build(pagination,libraryList);
     }

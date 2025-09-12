@@ -76,6 +76,4 @@ public class GenericResponse {
             throw new RuntimeException(e);
         }
     }
-
-
 }

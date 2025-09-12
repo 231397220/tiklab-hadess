@@ -158,7 +158,7 @@ public class LibraryVersionServiceImpl implements LibraryVersionService {
             libraryVersion.setFileNum(libraryFile.size());
         }
 
-        joinTemplate.joinQuery(libraryVersion);
+        joinTemplate.joinQuery(libraryVersion,new String[]{"library","repository"});
         return libraryVersion;
     }
 
@@ -194,7 +194,7 @@ public class LibraryVersionServiceImpl implements LibraryVersionService {
                     libraryVersion.setFileNum(libraryFile.size());
                 }
                 libraryVersion.setVersionNum(libraryVersionList.size());
-                joinTemplate.joinQuery(libraryVersion);
+                joinTemplate.joinQuery(libraryVersion,new String[]{"library","repository"});
             }
         }
         return libraryVersion;
@@ -206,7 +206,7 @@ public class LibraryVersionServiceImpl implements LibraryVersionService {
     @Override
     public LibraryVersion findLibraryVersionById(String versionId) {
         LibraryVersion libraryVersion = findOne(versionId);
-        joinTemplate.joinQuery(libraryVersion);
+        joinTemplate.joinQuery(libraryVersion,new String[]{"library","repository"});
         return libraryVersion;
     }
 
@@ -218,7 +218,7 @@ public class LibraryVersionServiceImpl implements LibraryVersionService {
 
         List<LibraryVersion> libraryVersionList =  BeanMapper.mapList(libraryVersionEntityList,LibraryVersion.class);
 
-        joinTemplate.joinQuery(libraryVersionList);
+        joinTemplate.joinQuery(libraryVersionList,new String[]{"library","repository"});
 
         return libraryVersionList;
     }
@@ -229,7 +229,7 @@ public class LibraryVersionServiceImpl implements LibraryVersionService {
 
         List<LibraryVersion> libraryVersionList = BeanMapper.mapList(libraryVersionEntityList,LibraryVersion.class);
 
-        joinTemplate.joinQuery(libraryVersionList);
+        joinTemplate.joinQuery(libraryVersionList,new String[]{"library","repository"});
 
         return libraryVersionList;
     }
@@ -249,7 +249,7 @@ public class LibraryVersionServiceImpl implements LibraryVersionService {
 
         List<LibraryVersion> libraryVersionList = BeanMapper.mapList(pagination.getDataList(),LibraryVersion.class);
 
-        joinTemplate.joinQuery(libraryVersionList);
+        joinTemplate.joinQuery(libraryVersionList,new String[]{"library","repository"});
         return PaginationBuilder.build(pagination,libraryVersionList);
     }
 
@@ -260,7 +260,7 @@ public class LibraryVersionServiceImpl implements LibraryVersionService {
         List<LibraryVersion> libraryVersionList=null;
         if (CollectionUtils.isNotEmpty(pagination.getDataList())){
              libraryVersionList = BeanMapper.mapList(pagination.getDataList(),LibraryVersion.class);
-            joinTemplate.joinQuery(libraryVersionList);
+            joinTemplate.joinQuery(libraryVersionList,new String[]{"library","repository"});
 
             //当版本为快照版本时候获取快照时间戳数据
             List<LibraryFile> libraryFileList=null;
@@ -335,7 +335,7 @@ public class LibraryVersionServiceImpl implements LibraryVersionService {
             }
 
             //maven 快照版本每次提交都会创建新的文件
-            if(!("npm").equals(libraryVersion.getLibraryType())){
+            if(!("npm").equals(libraryVersion.getLibraryType())&&!("docker").equals(libraryVersion.getLibraryType())){
                 //加上最新文件的大小
                 versionSize = versionSize + libraryVersion.getSize();
             }

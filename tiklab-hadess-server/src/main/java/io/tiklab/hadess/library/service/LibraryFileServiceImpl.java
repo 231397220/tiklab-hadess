@@ -182,7 +182,7 @@ public class LibraryFileServiceImpl implements LibraryFileService {
     public LibraryFile findLibraryFile(@NotNull String id) {
         LibraryFile libraryFile = findOne(id);
 
-        joinTemplate.joinQuery(libraryFile);
+        joinTemplate.joinQuery(libraryFile,new String[]{"library","libraryVersion","repository"});
 
         return libraryFile;
     }
@@ -194,7 +194,7 @@ public class LibraryFileServiceImpl implements LibraryFileService {
         List<LibraryFile> libraryFileList =  BeanMapper.mapList(libraryFileEntityList,LibraryFile.class);
 
 
-        joinTemplate.joinQuery(libraryFileList);
+        joinTemplate.joinQuery(libraryFileList,new String[]{"library","libraryVersion","repository"});
 
         return libraryFileList;
     }
@@ -203,7 +203,7 @@ public class LibraryFileServiceImpl implements LibraryFileService {
     public List<LibraryFile> findLibraryFileList(LibraryFileQuery libraryFileQuery) {
         List<LibraryFileEntity> libraryFileEntityList = libraryFileDao.findLibraryFileList(libraryFileQuery);
         List<LibraryFile> libraryFileList = BeanMapper.mapList(libraryFileEntityList,LibraryFile.class);
-        joinTemplate.joinQuery(libraryFileList);
+        joinTemplate.joinQuery(libraryFileList,new String[]{"library","libraryVersion","repository"});
 
         List<LibraryFile> libraryFiles = libraryFileList.stream().sorted(Comparator.comparing(LibraryFile::getFileName)).collect(Collectors.toList());
         return libraryFiles;
@@ -240,7 +240,7 @@ public class LibraryFileServiceImpl implements LibraryFileService {
 
         List<LibraryFile> libraryFileList = BeanMapper.mapList(pagination.getDataList(),LibraryFile.class);
 
-        joinTemplate.joinQuery(libraryFileList);
+        joinTemplate.joinQuery(libraryFileList,new String[]{"library","libraryVersion","repository"});
 
         return PaginationBuilder.build(pagination,libraryFileList);
     }
@@ -326,13 +326,28 @@ public class LibraryFileServiceImpl implements LibraryFileService {
         List<LibraryFileEntity> libraryFileEntity = libraryFileDao.findFileByReAndLibraryAndVer(repositoryId, libraryName, version);
         List<LibraryFile> libraryFileList = BeanMapper.mapList(libraryFileEntity,LibraryFile.class);
 
+        joinTemplate.joinQuery(libraryFileList,new String[]{"repository"});
         return libraryFileList;
     }
+
+    @Override
+    public LibraryFile findFileByRepoAndFileName(String[] repositoryId, String fileName) {
+        List<LibraryFileEntity> libraryFileEntityList = libraryFileDao.findFileByRepoAndFileName(repositoryId, fileName);
+        if (CollectionUtils.isEmpty(libraryFileEntityList)){
+            return null;
+        }
+        LibraryFileEntity libraryFileEntity = libraryFileEntityList.get(0);
+        LibraryFile libraryFile = BeanMapper.map(libraryFileEntity, LibraryFile.class);
+        joinTemplate.joinQuery(libraryFile,new String[]{"repository"});
+        return libraryFile;
+    }
+
     @Override
     public List<LibraryFile> findFileByReAndLibraryAndVer(String[] repositoryId, String libraryName, String version) {
         List<LibraryFileEntity> libraryFileEntity = libraryFileDao.findFileByReAndLibraryAndVer(repositoryId, libraryName, version);
         List<LibraryFile> libraryFileList = BeanMapper.mapList(libraryFileEntity,LibraryFile.class);
 
+        joinTemplate.joinQuery(libraryFileList,new String[]{"repository"});
         return libraryFileList;
     }
 
@@ -373,7 +388,7 @@ public class LibraryFileServiceImpl implements LibraryFileService {
             a.setLibraryVersion(libraryFile.getLibraryVersion());
             return a;
         }).collect(Collectors.toList());
-        joinTemplate.joinQuery(collected);
+        joinTemplate.joinQuery(collected,new String[]{"library","libraryVersion","repository"});
         return collected;
     }
 

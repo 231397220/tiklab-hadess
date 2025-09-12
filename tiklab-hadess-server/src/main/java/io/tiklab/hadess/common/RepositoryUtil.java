@@ -5,6 +5,7 @@ import io.tiklab.core.exception.ApplicationException;
 import io.tiklab.core.exception.SystemException;
 import io.tiklab.hadess.repository.model.NetworkProxy;
 import io.tiklab.hadess.repository.model.NetworkProxyQuery;
+import io.tiklab.hadess.repository.model.RemoteProxy;
 import io.tiklab.hadess.repository.service.NetworkProxyService;
 import io.tiklab.hadess.upload.common.UploadTool;
 import io.tiklab.toolkit.context.AppContext;
@@ -12,28 +13,23 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.lang.StringUtils;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
+import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.web.client.RestTemplate;
 
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.math.RoundingMode;
 import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.DecimalFormat;
@@ -213,6 +209,83 @@ public class RepositoryUtil {
         reader.close();
         conn.disconnect();
         return response.toString();
+    }
+
+
+    /**
+     *RestTemplate
+     * @param relativeAbsoluteUrl 连接地址
+     */
+    public static String getRestTemplate(String relativeAbsoluteUrl){
+        // 创建请求头对象
+        HttpHeaders headers = new HttpHeaders();
+
+        // 创建 HttpEntity 包含请求体和请求头
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        //设置连接超时时间
+        ClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        ((SimpleClientHttpRequestFactory) factory).setConnectTimeout(10000);
+
+        RestTemplate restTemplate = new RestTemplate(factory);
+        ResponseEntity<String> exchange = restTemplate.exchange(relativeAbsoluteUrl, HttpMethod.GET, requestEntity, String.class);
+        int statusCodeValue = exchange.getStatusCodeValue();
+        String body = exchange.getBody();
+        return body;
+    }
+    /**
+     *RestTemplate
+     * @param relativeAbsoluteUrl 连接地址
+     */
+    public static JSONObject getRestTemplateObject(String relativeAbsoluteUrl){
+        // 创建请求头对象
+        HttpHeaders headers = new HttpHeaders();
+
+        // 创建 HttpEntity 包含请求体和请求头
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        //设置连接超时时间
+        ClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        ((SimpleClientHttpRequestFactory) factory).setConnectTimeout(10000);
+
+        RestTemplate restTemplate = new RestTemplate(factory);
+        ResponseEntity<JSONObject> responseEntity = restTemplate.exchange(relativeAbsoluteUrl, HttpMethod.GET, requestEntity, JSONObject.class);
+        int statusCodeValue = responseEntity.getStatusCodeValue();
+        JSONObject body = responseEntity.getBody();
+        return body;
+    }
+
+    public static List getRestTemplateList(String path){
+        HttpHeaders headers = new HttpHeaders();
+        //headers.add("Authorization","Basic 123");
+
+        // 请求
+        HttpEntity<String> request = new HttpEntity<>(headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        ResponseEntity<List> exchange = restTemplate.exchange(path, HttpMethod.GET, request, List.class);
+        List body = exchange.getBody();
+        return body;
+    }
+
+    /**
+     *RestTemplate
+     * @param relativeAbsoluteUrl 连接地址
+     */
+    public static ResponseEntity<byte[]> getRestTemplateByte(String relativeAbsoluteUrl){
+        // 创建请求头对象
+        HttpHeaders headers = new HttpHeaders();
+
+        // 创建 HttpEntity 包含请求体和请求头
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+
+        //设置连接超时时间
+        ClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        ((SimpleClientHttpRequestFactory) factory).setConnectTimeout(10000);
+
+        RestTemplate restTemplate = new RestTemplate(factory);
+        ResponseEntity<byte[]> entity = restTemplate.exchange(relativeAbsoluteUrl, HttpMethod.GET, requestEntity, byte[].class);
+        return entity;
     }
 
     /**
@@ -752,4 +825,122 @@ public class RepositoryUtil {
         return address;
     }
 
+    //md5加密
+    public static String MD5Encryption(String path){
+
+        try {
+            // 创建 MessageDigest 实例（指定 MD5 算法）
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            // 读取文件内容并更新哈希计算
+            try (FileInputStream fis = new FileInputStream(path)) {
+                byte[] buffer = new byte[8192];
+                int bytesRead;
+                while ((bytesRead = fis.read(buffer)) != -1) {
+                    md.update(buffer, 0, bytesRead);
+                }
+            }
+
+            // 获取哈希字节数组并转换为十六进制字符串
+            byte[] hashBytes = md.digest();
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            String string = sb.toString();
+           return string;
+
+        } catch (Exception e) {
+            throw new RuntimeException("计算 MD5 失败: " + e.getMessage(), e);
+        }
+    }
+
+    //sha256加密
+    public static String sha256EncryptionPath(String filePath){
+
+        try {
+            // 读取文件的所有字节
+            byte[] fileData = Files.readAllBytes(Paths.get(filePath));
+            // 创建 SHA-256 MessageDigest 实例
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+
+            // 计算哈希值
+            byte[] encodedHash = digest.digest(fileData);
+
+            BigInteger number = new BigInteger(1, encodedHash);
+            StringBuilder hexString = new StringBuilder(number.toString(16));
+
+            // 补足前导零，确保长度为64位
+            while (hexString.length() < 64) {
+                hexString.insert(0, '0');
+            }
+            return hexString.toString();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+
+
+    //初始化创建rpm索引xml文件
+    public static  void createRpmIndexXml(String filePath){
+        FileUtil.createBorderAndFile(filePath);
+
+        StringBuilder xmlBuilder = new StringBuilder();
+
+        // 构建 XML 内容
+        xmlBuilder.append("<repomd xmlns=\"http://linux.duke.edu/metadata/repo\" xmlns:rpm=\"http://linux.duke.edu/metadata/rpm\">\n");
+        xmlBuilder.append("  <revision>8-stream</revision>\n");
+        xmlBuilder.append("  <tags>\n");
+        xmlBuilder.append("  <distro cpeid=\"cpe:/o:centos-stream:centos-stream:8\">CentOS Stream 8</distro>\n");
+        xmlBuilder.append("  </tags>\n");
+        xmlBuilder.append("  <data type=\"primary\">\n");
+        xmlBuilder.append("  </data>\n");
+        xmlBuilder.append("  <data type=\"filelists\">\n");
+        xmlBuilder.append("  </data>\n");
+        xmlBuilder.append("</repomd>");
+
+        try {
+            FileWriter writer = new FileWriter(filePath, StandardCharsets.UTF_8);
+            writer.write(xmlBuilder.toString());
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //初始化创建rpm索引xml文件
+    public static  void createRpmFileXml(String filePath){
+        FileUtil.createBorderAndFile(filePath);
+        StringBuilder xmlBuilder = new StringBuilder();
+
+        // 构建 XML 内容
+        xmlBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        xmlBuilder.append("<filelists xmlns=\"http://linux.duke.edu/metadata/filelists\" packages=\"0\">\n");
+        xmlBuilder.append("</filelists>");
+        try {
+            FileWriter writer = new FileWriter(filePath, StandardCharsets.UTF_8);
+            writer.write(xmlBuilder.toString());
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    //初始化创建rpm索引xml文件
+    public static  void createRpmPrimaryXml(String filePath){
+        FileUtil.createBorderAndFile(filePath);
+        StringBuilder xmlBuilder = new StringBuilder();
+
+        // 构建 XML 内容
+        xmlBuilder.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
+        xmlBuilder.append("<metadata xmlns=\"http://linux.duke.edu/metadata/common\" xmlns:rpm=\"http://linux.duke.edu/metadata/rpm\" packages=\"0\">\n");
+        xmlBuilder.append("</metadata>");
+        try {
+            FileWriter writer = new FileWriter(filePath, StandardCharsets.UTF_8);
+            writer.write(xmlBuilder.toString());
+            writer.flush();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
 }

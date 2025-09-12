@@ -68,6 +68,13 @@ public interface LibraryMavenService {
     List<LibraryMaven> findLibraryMavenList(LibraryMavenQuery libraryMavenQuery);
 
     /**
+     * 通过仓库id查询列表
+     * @param libraryMavenQuery
+     * @return
+     */
+    List<LibraryMaven> findLibraryMavenByRepId(String repId);
+
+    /**
     * 按分页查询
     * @param libraryMavenQuery
     * @return

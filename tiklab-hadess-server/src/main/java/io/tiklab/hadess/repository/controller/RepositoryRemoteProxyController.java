@@ -86,5 +86,11 @@ public class RepositoryRemoteProxyController {
         return Result.ok(pagination);
     }
 
+    @RequestMapping(path = "/syncRpmIndex",method = RequestMethod.POST)
+    public Result<Void> syncRpmIndex( @NotNull String repoId,@NotNull  String remoteId){
+        repositoryRemoteProxyService.syncRpmIndex(repoId,remoteId);
+
+        return Result.ok();
+    }
 
 }

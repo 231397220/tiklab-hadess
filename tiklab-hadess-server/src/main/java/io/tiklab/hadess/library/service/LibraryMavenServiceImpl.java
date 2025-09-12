@@ -81,7 +81,7 @@ public class LibraryMavenServiceImpl implements LibraryMavenService {
     public LibraryMaven findLibraryMaven(@NotNull String id) {
         LibraryMaven libraryMaven = findOne(id);
 
-        joinTemplate.joinQuery(libraryMaven);
+        joinTemplate.joinQuery(libraryMaven,new String[]{"library"});
 
         return libraryMaven;
     }
@@ -92,7 +92,7 @@ public class LibraryMavenServiceImpl implements LibraryMavenService {
 
         List<LibraryMaven> libraryMavenList =  BeanMapper.mapList(libraryMavenEntityList,LibraryMaven.class);
 
-        joinTemplate.joinQuery(libraryMavenList);
+        joinTemplate.joinQuery(libraryMavenList,new String[]{"library"});
 
         return libraryMavenList;
     }
@@ -103,9 +103,15 @@ public class LibraryMavenServiceImpl implements LibraryMavenService {
 
         List<LibraryMaven> libraryMavenList = BeanMapper.mapList(libraryMavenEntityList,LibraryMaven.class);
 
-        joinTemplate.joinQuery(libraryMavenList);
+        joinTemplate.joinQuery(libraryMavenList,new String[]{"library"});
 
         return libraryMavenList;
+    }
+
+    @Override
+    public List<LibraryMaven> findLibraryMavenByRepId(String repId) {
+        List<LibraryMaven> libraryList =libraryMavenDao.findLibraryMavenByRepId(repId);
+        return libraryList;
     }
 
     @Override
@@ -114,7 +120,7 @@ public class LibraryMavenServiceImpl implements LibraryMavenService {
 
         List<LibraryMaven> libraryMavenList = BeanMapper.mapList(pagination.getDataList(),LibraryMaven.class);
 
-        joinTemplate.joinQuery(libraryMavenList);
+        joinTemplate.joinQuery(libraryMavenList,new String[]{"library"});
 
         return PaginationBuilder.build(pagination,libraryMavenList);
     }

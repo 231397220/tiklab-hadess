@@ -82,7 +82,7 @@ public class RepositoryGroupServiceImpl implements RepositoryGroupService {
     public RepositoryGroup findRepositoryGroup(@NotNull String id) {
         RepositoryGroup repositoryGroup = findOne(id);
 
-        joinTemplate.joinQuery(repositoryGroup);
+        joinTemplate.joinQuery(repositoryGroup,new String[]{"repositoryGroup","repository"});
 
         return repositoryGroup;
     }
@@ -93,7 +93,7 @@ public class RepositoryGroupServiceImpl implements RepositoryGroupService {
 
         List<RepositoryGroup> repositoryGroupList =  BeanMapper.mapList(repositoryGroupEntityList,RepositoryGroup.class);
 
-        joinTemplate.joinQuery(repositoryGroupList);
+        joinTemplate.joinQuery(repositoryGroupList,new String[]{"repositoryGroup","repository"});
 
         return repositoryGroupList;
     }
@@ -104,7 +104,7 @@ public class RepositoryGroupServiceImpl implements RepositoryGroupService {
 
         List<RepositoryGroup> repositoryGroupList = BeanMapper.mapList(repositoryGroupEntityList,RepositoryGroup.class);
 
-        joinTemplate.joinQuery(repositoryGroupList);
+        joinTemplate.joinQuery(repositoryGroupList,new String[]{"repositoryGroup","repository"});
 
         return repositoryGroupList;
     }
@@ -115,7 +115,7 @@ public class RepositoryGroupServiceImpl implements RepositoryGroupService {
 
         List<RepositoryGroup> repositoryGroupList = BeanMapper.mapList(pagination.getDataList(),RepositoryGroup.class);
 
-        joinTemplate.joinQuery(repositoryGroupList);
+        joinTemplate.joinQuery(repositoryGroupList,new String[]{"repositoryGroup","repository"});
 
         return PaginationBuilder.build(pagination,repositoryGroupList);
     }

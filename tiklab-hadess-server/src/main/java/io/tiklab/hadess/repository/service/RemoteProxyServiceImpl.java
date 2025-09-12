@@ -76,8 +76,6 @@ public class RemoteProxyServiceImpl implements RemoteProxyService {
     public RemoteProxy findRemoteProxy(@NotNull String id) {
         RemoteProxy remoteProxy = findOne(id);
 
-        joinTemplate.joinQuery(remoteProxy);
-
         return remoteProxy;
     }
 
@@ -86,8 +84,6 @@ public class RemoteProxyServiceImpl implements RemoteProxyService {
         List<RemoteProxyEntity> remoteProxyEntityList =  remoteProxyDao.findAllRemoteProxy();
 
         List<RemoteProxy> remoteProxyList =  BeanMapper.mapList(remoteProxyEntityList,RemoteProxy.class);
-
-        joinTemplate.joinQuery(remoteProxyList);
 
         return remoteProxyList;
     }
@@ -98,8 +94,6 @@ public class RemoteProxyServiceImpl implements RemoteProxyService {
 
         List<RemoteProxy> remoteProxyList = BeanMapper.mapList(remoteProxyEntityList,RemoteProxy.class);
 
-        joinTemplate.joinQuery(remoteProxyList);
-
         return remoteProxyList;
     }
 
@@ -108,8 +102,6 @@ public class RemoteProxyServiceImpl implements RemoteProxyService {
         Pagination<RemoteProxyEntity>  pagination = remoteProxyDao.findRemoteProxyPage(remoteProxyQuery);
 
         List<RemoteProxy> remoteProxyList = BeanMapper.mapList(pagination.getDataList(),RemoteProxy.class);
-
-        joinTemplate.joinQuery(remoteProxyList);
 
         return PaginationBuilder.build(pagination,remoteProxyList);
     }

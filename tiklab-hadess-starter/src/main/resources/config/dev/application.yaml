@@ -11,7 +11,7 @@ server:
 
 APP_HOME: ${APP_HOME}
 
-DATA_HOME: ${user.home}/tiklab/thoughtware-hadess
+DATA_HOME: ${user.home}/tiklab/tiklab-hadess
 
 #dal config for mysql jdbc
 jdbc:
@@ -53,6 +53,7 @@ auth:
 external:
   url:
 
-
+verify:
+  state: false
 
 

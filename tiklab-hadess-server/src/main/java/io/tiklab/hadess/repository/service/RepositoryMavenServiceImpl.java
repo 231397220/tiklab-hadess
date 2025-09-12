@@ -79,7 +79,7 @@ public class RepositoryMavenServiceImpl implements RepositoryMavenService {
     public RepositoryMaven findRepositoryMaven(@NotNull String id) {
         RepositoryMaven repositoryMaven = findOne(id);
 
-        joinTemplate.joinQuery(repositoryMaven);
+        joinTemplate.joinQuery(repositoryMaven,new String[]{"repository"});
 
         return repositoryMaven;
     }
@@ -90,7 +90,7 @@ public class RepositoryMavenServiceImpl implements RepositoryMavenService {
 
         List<RepositoryMaven> repositoryMavenList =  BeanMapper.mapList(repositoryMavenEntityList,RepositoryMaven.class);
 
-        joinTemplate.joinQuery(repositoryMavenList);
+        joinTemplate.joinQuery(repositoryMavenList,new String[]{"repository"});
 
         return repositoryMavenList;
     }
@@ -101,7 +101,7 @@ public class RepositoryMavenServiceImpl implements RepositoryMavenService {
 
         List<RepositoryMaven> repositoryMavenList = BeanMapper.mapList(repositoryMavenEntityList,RepositoryMaven.class);
 
-        joinTemplate.joinQuery(repositoryMavenList);
+        joinTemplate.joinQuery(repositoryMavenList,new String[]{"repository"});
 
         return repositoryMavenList;
     }
@@ -123,7 +123,7 @@ public class RepositoryMavenServiceImpl implements RepositoryMavenService {
 
         List<RepositoryMaven> repositoryMavenList = BeanMapper.mapList(pagination.getDataList(),RepositoryMaven.class);
 
-        joinTemplate.joinQuery(repositoryMavenList);
+        joinTemplate.joinQuery(repositoryMavenList,new String[]{"repository"});
 
         return PaginationBuilder.build(pagination,repositoryMavenList);
     }

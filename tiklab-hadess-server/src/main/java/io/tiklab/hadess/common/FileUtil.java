@@ -1,17 +1,17 @@
 package io.tiklab.hadess.common;
 
 import io.tiklab.core.exception.SystemException;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.io.IOUtils;
+import org.springframework.http.HttpMethod;
+import org.springframework.web.client.RestTemplate;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.Part;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
+import java.nio.file.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -85,6 +85,34 @@ public class FileUtil {
         }
     }
 
+    /**
+     * 流写入文件
+     *
+     * @param inputStream 内容流
+     * @param filePath  写入文件的地址
+     */
+    public static void writeDataToFile(InputStream inputStream, String filePath) {
+        Path path = Paths.get(filePath);
+
+        try {
+            // 创建所有必要的目录
+            Files.createDirectories(path.getParent());
+
+            // 写入数据
+            try (FileOutputStream outputStream = new FileOutputStream(path.toFile())) {
+                byte[] buffer = new byte[4096]; // 设置缓冲区大小
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead); // 写入数据
+                }
+                outputStream.flush(); // 确保所有数据都写入
+            }
+        } catch (IOException e) {
+            e.printStackTrace(); // 处理异常
+            throw new SystemException(HadessFinal.WRITE_EXCEPTION, "写入数据失败");
+        }
+}
+
 
     /**
      * 写入string到文件路径中
@@ -93,11 +121,22 @@ public class FileUtil {
      * @param filePath 文件路径
      */
     public static void writeStringToFile(String content, String filePath) throws IOException {
+        Path path = createBorderAndFile(filePath);
+
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
             writer.write(content);
         }
     }
 
+    /**
+     * 写入byte到文件路径中
+     * @param content  内容
+     * @param filePath 文件路径
+     */
+    public static void writeByteToFile(byte[] content, String filePath) throws IOException {
+        Path path = createBorderAndFile(filePath);
+        Files.write(path, content);
+    }
 
     /**
      * 读取zip压缩包里面的文件内容
@@ -147,5 +186,59 @@ public class FileUtil {
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+
+    /**
+     * 转发远程获取（写入本地、返回给客户端）
+     * @param relativeAbsoluteUrl 文件请求路径
+     * @param  storePath 本地存储路径
+     */
+    public static void restTemplateGetByte(HttpServletResponse response,String relativeAbsoluteUrl,String storePath) throws IOException {
+        RestTemplate restTemplate = new RestTemplate();
+        Path localFilePath = createBorderAndFile(storePath);
+        restTemplate.execute(relativeAbsoluteUrl, HttpMethod.GET, null, clientHttpResponse -> {
+            try (InputStream inputStream = clientHttpResponse.getBody();
+                 OutputStream outputStream = response.getOutputStream();
+                 OutputStream fileOutput = Files.newOutputStream(localFilePath, StandardOpenOption.CREATE)) {
+
+                byte[] buffer = new byte[8192]; // 8KB缓冲区
+                int bytesRead;
+                while ((bytesRead = inputStream.read(buffer)) != -1) {
+                    outputStream.write(buffer, 0, bytesRead);
+                    fileOutput.write(buffer, 0, bytesRead);
+
+                    // 立即刷新确保数据发送
+                    outputStream.flush();
+                    fileOutput.flush();
+                }
+                // inputStream.transferTo(outputStream);
+            }
+            return null;
+        });
+    }
+
+    //创建文件夹文件
+    public static  Path  createBorderAndFile(String filePath)  {
+        try {
+            // 创建 Path 对象
+            Path path = Paths.get(filePath);
+            // 获取父目录
+            Path parentDir = path.getParent();
+
+            // 创建父目录（如果不存在）
+            if (parentDir != null) {
+                Files.createDirectories(parentDir);
+            }
+
+            // 创建文件（如果不存在）
+            if (!Files.exists(path)) {
+                Files.createFile(path);
+            }
+            return path;
+        }catch (Exception e){
+            throw new SystemException(e.getMessage());
+        }
+
     }
 }

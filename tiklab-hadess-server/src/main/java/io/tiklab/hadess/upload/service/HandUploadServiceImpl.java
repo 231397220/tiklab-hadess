@@ -78,7 +78,6 @@ public class HandUploadServiceImpl implements HandUploadService {
 
         if (!file.exists()){
             file.createNewFile();
-
         }
         //用字节流写入文件
         FileOutputStream outputStream = new FileOutputStream(filePath);

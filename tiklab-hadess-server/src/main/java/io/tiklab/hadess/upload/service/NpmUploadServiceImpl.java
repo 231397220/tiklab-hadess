@@ -12,7 +12,7 @@ import io.tiklab.eam.passport.user.service.UserPassportService;
 import io.tiklab.hadess.upload.model.LibraryUploadData;
 import io.tiklab.hadess.upload.model.LibraryUploadResult;
 import io.tiklab.hadess.upload.model.NpmPubData;
-import io.tiklab.user.user.service.UserService;
+import io.tiklab.user.user.service.UserProcessor;
 import io.tiklab.hadess.library.service.LibraryFileService;
 import io.tiklab.hadess.library.service.LibraryService;
 import io.tiklab.hadess.library.service.LibraryVersionService;
@@ -62,7 +62,7 @@ public class NpmUploadServiceImpl implements NpmUploadService {
     RepositoryRemoteProxyService remoteProxyService;
 
     @Autowired
-    UserService userService;
+    UserProcessor userProcessor;
 
     @Autowired
     UserPassportService userPassportService;
@@ -685,12 +685,6 @@ public class NpmUploadServiceImpl implements NpmUploadService {
         }
         return uploadResult;
     }
-
-
-
-
-
-
 
 
 

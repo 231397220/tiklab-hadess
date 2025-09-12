@@ -6,6 +6,7 @@ import io.tiklab.core.Result;
 import io.tiklab.hadess.common.RepositoryUtil;
 import io.tiklab.hadess.common.UuidGenerator;
 import io.tiklab.hadess.upload.model.error.DockerErrorResponse;
+import org.apache.commons.lang3.StringUtils;
 
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
@@ -13,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Map;
 
 public class DockerResponse {
@@ -38,6 +40,11 @@ public class DockerResponse {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             response.getWriter().close();
         }
+    }
+
+    public static void dockerAccountSuccess(HttpServletResponse response) throws IOException {
+        response.setStatus(HttpServletResponse.SC_OK);
+        response.getWriter().close();
     }
 
 
@@ -197,9 +204,11 @@ public class DockerResponse {
     public static void DockerUploadBlobs(Result result, String contextPath, HttpServletRequest request, HttpServletResponse response) throws IOException {
         String uploadID = contextPath.substring(contextPath.lastIndexOf("/") + 1);
         if (result.getCode()==0){
+            Enumeration<String> headerNames = request.getHeaderNames();
             String length = request.getHeader("content-length");
+            Object number = StringUtils.isBlank(length) ? result.getData() : length;
             //镜像文件大小区间
-            int i = Integer.valueOf(length) - 1;
+            int i = Integer.valueOf(number.toString()) - 1;
             String range="0-"+i;
             response.setStatus(HttpServletResponse.SC_ACCEPTED);
             response.setHeader("Location", contextPath);

@@ -90,6 +90,7 @@ public class UuidGenerator {
         return DigestUtils.md5Hex(UUID.randomUUID().toString());
     }
 
+
     /* ---------------------------------------------分割线------------------------------------------------ */
     /** 字符串MD5处理类 */
     private static class DigestUtils {

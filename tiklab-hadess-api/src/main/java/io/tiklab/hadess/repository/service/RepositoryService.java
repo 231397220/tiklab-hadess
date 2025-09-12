@@ -121,5 +121,9 @@ public interface RepositoryService {
      */
     List<Repository> findUnRelevanceRepository(String repositoryType,String repositoryGroupId);
 
-
+    /**
+     * 更新rpm仓库的索引
+     * @param repoId 仓库id
+     */
+    void updateRpmIndex(String repoId);
 }

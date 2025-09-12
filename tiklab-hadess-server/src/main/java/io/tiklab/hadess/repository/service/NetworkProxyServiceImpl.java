@@ -74,8 +74,6 @@ public class NetworkProxyServiceImpl implements NetworkProxyService {
     public NetworkProxy findNetworkProxy(@NotNull String id) {
         NetworkProxy networkProxy = findOne(id);
 
-        joinTemplate.joinQuery(networkProxy);
-
         return networkProxy;
     }
 
@@ -84,8 +82,6 @@ public class NetworkProxyServiceImpl implements NetworkProxyService {
         List<NetworkProxyEntity> networkProxyEntityList =  networkProxyDao.findAllNetworkProxy();
 
         List<NetworkProxy> networkProxyList =  BeanMapper.mapList(networkProxyEntityList,NetworkProxy.class);
-
-        joinTemplate.joinQuery(networkProxyList);
 
         return networkProxyList;
     }
@@ -96,8 +92,6 @@ public class NetworkProxyServiceImpl implements NetworkProxyService {
 
         List<NetworkProxy> networkProxyList = BeanMapper.mapList(networkProxyEntityList,NetworkProxy.class);
 
-        joinTemplate.joinQuery(networkProxyList);
-
         return networkProxyList;
     }
 
@@ -106,8 +100,6 @@ public class NetworkProxyServiceImpl implements NetworkProxyService {
         Pagination<NetworkProxyEntity>  pagination = networkProxyDao.findNetworkProxyPage(networkProxyQuery);
 
         List<NetworkProxy> networkProxyList = BeanMapper.mapList(pagination.getDataList(),NetworkProxy.class);
-
-        joinTemplate.joinQuery(networkProxyList);
 
         return PaginationBuilder.build(pagination,networkProxyList);
     }

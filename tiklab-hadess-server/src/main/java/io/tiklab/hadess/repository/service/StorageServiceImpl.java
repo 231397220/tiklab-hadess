@@ -67,8 +67,6 @@ public class StorageServiceImpl implements StorageService {
     public Storage findStorage(@NotNull String id) {
         Storage storage = findOne(id);
 
-        joinTemplate.joinQuery(storage);
-
         return storage;
     }
 
@@ -77,8 +75,6 @@ public class StorageServiceImpl implements StorageService {
         List<StorageEntity> storageEntityList =  storageDao.findAllStorage();
 
         List<Storage> storageList =  BeanMapper.mapList(storageEntityList,Storage.class);
-
-        joinTemplate.joinQuery(storageList);
 
         return storageList;
     }
@@ -89,8 +85,6 @@ public class StorageServiceImpl implements StorageService {
 
         List<Storage> storageList = BeanMapper.mapList(storageEntityList,Storage.class);
 
-        joinTemplate.joinQuery(storageList);
-
         return storageList;
     }
 
@@ -99,8 +93,6 @@ public class StorageServiceImpl implements StorageService {
         Pagination<StorageEntity>  pagination = storageDao.findStoragePage(storageQuery);
 
         List<Storage> storageList = BeanMapper.mapList(pagination.getDataList(),Storage.class);
-
-        joinTemplate.joinQuery(storageList);
 
         return PaginationBuilder.build(pagination,storageList);
     }

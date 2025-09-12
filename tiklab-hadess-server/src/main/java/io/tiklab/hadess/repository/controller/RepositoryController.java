@@ -20,7 +20,7 @@ import java.util.List;
 
 
 @RestController
-@RequestMapping("/xpackRepository")
+@RequestMapping("/hadessRepository")
 @Api(name = "制品库管理",desc = "制品库管理 ")
 public class RepositoryController {
 
@@ -122,4 +122,15 @@ public class RepositoryController {
 
         return Result.ok(repositoryList);
     }
+
+    @RequestMapping(path = "/updateRpmIndex",method = RequestMethod.POST)
+    //@ApiMethod(name = "findUnRelevanceRepository",desc = "更新rpm的索引文件")
+    @ApiParam(name = "repositoryType",desc = "repositoryType",required = true)
+    public Result<Void> updateRpmIndex(String repoId){
+         repositoryService.updateRpmIndex(repoId);
+
+        return Result.ok();
+    }
+
+
 }

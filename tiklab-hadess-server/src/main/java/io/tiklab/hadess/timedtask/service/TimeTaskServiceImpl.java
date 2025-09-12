@@ -147,7 +147,6 @@ public class TimeTaskServiceImpl implements TimeTaskService {
     public TimeTask findTimeTask(@NotNull String id) {
         TimeTask timeTask = findOne(id);
 
-        joinTemplate.joinQuery(timeTask);
 
         return timeTask;
     }
@@ -158,8 +157,6 @@ public class TimeTaskServiceImpl implements TimeTaskService {
 
         List<TimeTask> timeTaskList =  BeanMapper.mapList(timeTaskEntityList,TimeTask.class);
 
-        joinTemplate.joinQuery(timeTaskList);
-
         return timeTaskList;
     }
 
@@ -168,8 +165,6 @@ public class TimeTaskServiceImpl implements TimeTaskService {
         List<TimeTaskEntity> timeTaskEntityList = timeTaskDao.findTimeTaskList(timeTaskQuery);
 
         List<TimeTask> timeTaskList = BeanMapper.mapList(timeTaskEntityList,TimeTask.class);
-
-        joinTemplate.joinQuery(timeTaskList);
 
         for (TimeTask timeTask:timeTaskList){
             List<TimeTaskInstance> timeTaskInstanceList = taskInstanceService.findTimeTaskInstanceList(new TimeTaskInstanceQuery().setTimeTaskId(timeTask.getId()));
@@ -199,8 +194,6 @@ public class TimeTaskServiceImpl implements TimeTaskService {
         Pagination<TimeTaskEntity>  pagination = timeTaskDao.findTimeTaskPage(timeTaskQuery);
 
         List<TimeTask> timeTaskList = BeanMapper.mapList(pagination.getDataList(),TimeTask.class);
-
-        joinTemplate.joinQuery(timeTaskList);
 
         return PaginationBuilder.build(pagination,timeTaskList);
     }

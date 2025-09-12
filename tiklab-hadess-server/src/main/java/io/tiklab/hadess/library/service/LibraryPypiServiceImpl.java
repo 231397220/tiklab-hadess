@@ -83,7 +83,6 @@ public class LibraryPypiServiceImpl implements LibraryPypiService {
     public LibraryPypi findLibraryPypi(@NotNull String id) {
         LibraryPypi libraryPypi = findOne(id);
 
-        joinTemplate.joinQuery(libraryPypi);
 
         return libraryPypi;
     }
@@ -94,7 +93,6 @@ public class LibraryPypiServiceImpl implements LibraryPypiService {
 
         List<LibraryPypi> libraryPypiList =  BeanMapper.mapList(libraryPypiEntityList,LibraryPypi.class);
 
-        joinTemplate.joinQuery(libraryPypiList);
 
         return libraryPypiList;
     }
@@ -105,7 +103,6 @@ public class LibraryPypiServiceImpl implements LibraryPypiService {
 
         List<LibraryPypi> libraryPypiList = BeanMapper.mapList(libraryPypiEntityList,LibraryPypi.class);
 
-        joinTemplate.joinQuery(libraryPypiList);
 
         return libraryPypiList;
     }
@@ -116,7 +113,6 @@ public class LibraryPypiServiceImpl implements LibraryPypiService {
 
         List<LibraryPypi> libraryPypiList = BeanMapper.mapList(pagination.getDataList(),LibraryPypi.class);
 
-        joinTemplate.joinQuery(libraryPypiList);
 
         return PaginationBuilder.build(pagination,libraryPypiList);
     }

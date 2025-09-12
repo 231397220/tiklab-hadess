@@ -22,6 +22,9 @@ public interface XpackYamlDataMaService {
      */
     String schemaName();
 
+    //获取是否校验状态
+    boolean getVerify();
+
 
     /**
      * 仓库地址

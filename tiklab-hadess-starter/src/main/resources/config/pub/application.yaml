@@ -50,3 +50,9 @@ auth:
 external:
   url: https://mirror.tiklab.net
 
+verify:
+  state: false
+
+
+
+

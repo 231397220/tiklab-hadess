@@ -8,7 +8,7 @@ import io.tiklab.security.logging.logging.model.Logging;
 import io.tiklab.security.logging.logging.model.LoggingType;
 import io.tiklab.security.logging.logging.service.LoggingByTempService;
 import io.tiklab.user.user.model.User;
-import io.tiklab.user.user.service.UserService;
+import io.tiklab.user.user.service.UserProcessor;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,7 +29,7 @@ public class HadessMessageServiceImpl implements HadessMessageService{
     SendMessageNoticeService dispatchNoticeService;
 
     @Autowired
-    UserService userService;
+    UserProcessor userProcessor;
 
     @Autowired
     LoggingByTempService logService;
@@ -65,7 +65,7 @@ public class HadessMessageServiceImpl implements HadessMessageService{
 
         //用户信息
         String userId = LoginContext.getLoginId();
-        User user = userService.findOne(userId);
+        User user = userProcessor.findOne(userId);
 
         log.setUser(user);
         log.setLink(map.get("link").toString());  //跳转地址
@@ -82,7 +82,7 @@ public class HadessMessageServiceImpl implements HadessMessageService{
     public HashMap<String,Object> initMap() {
         HashMap<String,Object> map = new HashMap<>();
         String userId = LoginContext.getLoginId();
-        User user = userService.findOne(userId);
+        User user = userProcessor.findOne(userId);
         String userName;
         if (ObjectUtils.isEmpty(user)){
             userName="admin";

@@ -70,7 +70,7 @@ public class PullInfoServiceImpl implements PullInfoService {
     public PullInfo findPullInfo(@NotNull String id) {
         PullInfo pullInfo = findOne(id);
 
-        joinTemplate.joinQuery(pullInfo);
+        joinTemplate.joinQuery(pullInfo,new String[]{"library","libraryVersion","user"});
 
         return pullInfo;
     }
@@ -81,8 +81,7 @@ public class PullInfoServiceImpl implements PullInfoService {
 
         List<PullInfo> pullInfoList =  BeanMapper.mapList(pullInfoEntityList,PullInfo.class);
 
-        joinTemplate.joinQuery(pullInfoList);
-
+        joinTemplate.joinQuery(pullInfoList,new String[]{"library","libraryVersion","user"});
         return pullInfoList;
     }
 
@@ -92,7 +91,7 @@ public class PullInfoServiceImpl implements PullInfoService {
 
         List<PullInfo> pullInfoList = BeanMapper.mapList(pullInfoEntityList,PullInfo.class);
 
-        joinTemplate.joinQuery(pullInfoList);
+        joinTemplate.joinQuery(pullInfoList,new String[]{"library","libraryVersion","user"});
         return pullInfoList;
     }
 
@@ -102,7 +101,7 @@ public class PullInfoServiceImpl implements PullInfoService {
 
         List<PullInfo> pullInfoList = BeanMapper.mapList(pagination.getDataList(),PullInfo.class);
 
-        joinTemplate.joinQuery(pullInfoList);
+        joinTemplate.joinQuery(pullInfoList,new String[]{"library","libraryVersion","user"});
 
         return PaginationBuilder.build(pagination,pullInfoList);
     }

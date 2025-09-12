@@ -84,16 +84,32 @@ public class HadessGatewayAutoConfiguration {
                         "/sockjs-node/info",
                         "/eam/auth/login",
                         "/libraryFile/tag",
-                        "/xpackRepository/findAllRepository",
+
                         "/version/getVersion",
                         "/licence/import",
                         "/alterSql/updateId",
+
+                        "/hadessRepository/findAllRepository",
+                        "/hadessRepository/findRepositoryList",
+                        "/hadessRepository/findRepositoryPage",
+                        "/hadessRepository/findRepository",
+                        "/library/findLibraryListByCond",
+                        "/library/findLibraryListByRepository",
+                        "/libraryVersion/findVersionByLibraryId",
+                        "/libraryVersion/findHistoryVersionPage",
+                        "/libraryFile/findLibraryNewFileList",
+                        "/libraryFile/findLibraryNewFileList",
+                        "/fileHand/findServerIp",
+
+
 
                         "/message/messageItem/syncUpdateMessage",
                         "/message/messageItem/syncDeleteMessage",
                         "/permission/findPermissions",
                         "/init/install/findStatus",
-                        "/state/apply/findApply"
+                        "/state/apply/findApply",
+                        "/user/ldap/common/cfg/findLdapCfg",
+                        "/eam/ldap/passport/login"
 
                 })
                 .ignorePreUrls(new String[]{
@@ -114,6 +130,8 @@ public class HadessGatewayAutoConfiguration {
                         "/composer",
                         "/composerPack",
                         "/nuget",
+                        "/conan",
+                        "/rpm",
                         "/pushCenWarehouse",
                         "/libraryFile",
                         "/xpack",

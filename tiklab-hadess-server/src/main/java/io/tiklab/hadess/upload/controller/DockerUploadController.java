@@ -23,7 +23,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/v2")
-//@Api(name = "DockerUploadController",desc = "Maven提交这个用于手动提交不校验用户信息")
+//@Api(name = "DockerUploadController",desc = "")
 public class DockerUploadController {
     private static Logger logger = LoggerFactory.getLogger(DockerUploadController.class);
     @Autowired
@@ -31,6 +31,7 @@ public class DockerUploadController {
 
     @Autowired
     XpackYamlDataMaService yamlDataMaService;
+
 
     @RequestMapping(path="/**",method = {RequestMethod.GET,RequestMethod.HEAD,RequestMethod.POST,
             RequestMethod.PATCH,RequestMethod.PUT})
@@ -57,6 +58,11 @@ public class DockerUploadController {
                 DockerResponse.dockerPullManifests(manifests,"GET",response);
             }else {
                 //登陆、推送。校验用户信息
+                boolean verify = yamlDataMaService.getVerify();
+                if (!verify){
+                    DockerResponse.dockerAccountSuccess(response);
+                    return;
+                }
                 String authorization = request.getHeader("Authorization");
                 Result<String> userCheck = dockerUploadService.userCheck(authorization);
                 DockerResponse.dockerAccountVerify(userCheck,response);

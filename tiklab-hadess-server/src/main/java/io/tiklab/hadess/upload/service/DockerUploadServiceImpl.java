@@ -114,7 +114,7 @@ public class DockerUploadServiceImpl implements DockerUploadService {
     }
 
     @Override
-    public Result v2Sha256Check(String repositoryPath) throws Exception {
+    public Result v2Sha256Check(String repositoryPath)  {
         String sha256 = repositoryPath.substring(repositoryPath.indexOf("sha256:") );
 
         String repositoryAddress = yamlDataMaService.repositoryAddress();
@@ -235,7 +235,7 @@ public class DockerUploadServiceImpl implements DockerUploadService {
 
         blobsDataSize.put(fileName, String.valueOf(fileLength));
 
-        return Result.ok();
+        return Result.ok(fileLength);
     }
 
     @Override

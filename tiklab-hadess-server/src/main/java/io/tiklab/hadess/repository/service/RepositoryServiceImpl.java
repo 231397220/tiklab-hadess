@@ -2,6 +2,8 @@ package io.tiklab.hadess.repository.service;
 import com.alibaba.fastjson.JSON;
 import io.tiklab.hadess.common.*;
 import io.tiklab.hadess.library.dao.LibraryDao;
+import io.tiklab.hadess.library.model.LibraryFile;
+import io.tiklab.hadess.library.model.LibraryFileQuery;
 import io.tiklab.hadess.library.service.LibraryFileService;
 import io.tiklab.hadess.library.service.LibraryMavenService;
 import io.tiklab.hadess.library.service.LibraryService;
@@ -36,6 +38,7 @@ import org.springframework.util.ObjectUtils;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.io.File;
+import java.nio.file.Path;
 import java.sql.Timestamp;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -146,9 +149,19 @@ public class RepositoryServiceImpl implements RepositoryService {
             file.mkdirs();
         }
 
-        if (("helm").equals(repository.getType())){
+        if (("helm").equals(repositoryEntity.getType())){
             //初始化helm制品库的索引文件
             RepositoryUtil.initHelmIndexFile(repositoryBolder+"/index.yaml");
+        }
+
+        //初始化rpm制品库的索引文件
+        if (("rpm").equals(repositoryEntity.getType())&&("local").equals(repositoryEntity.getRepositoryType())){
+            String s = yamlDataMaService.repositoryAddress() + "/" + repositoryId + HadessFinal.REPO_MD_PATH;
+            String filePath = yamlDataMaService.repositoryAddress() + "/" + repositoryId + HadessFinal.RPM_FILE_PATH;
+            String primaryPath = yamlDataMaService.repositoryAddress() + "/" + repositoryId + HadessFinal.RPM_PRIMARY_PATH;
+            RepositoryUtil.createRpmIndexXml(s);
+            RepositoryUtil.createRpmFileXml(filePath);
+            RepositoryUtil.createRpmPrimaryXml(primaryPath);
         }
 
         String userId;
@@ -311,7 +324,8 @@ public class RepositoryServiceImpl implements RepositoryService {
 
         Repository repository = BeanMapper.map(repositoryEntity, Repository.class);
         if (!ObjectUtils.isEmpty(repository)){
-            repository.setRepositoryUrl(findRepositoryUrl(repository));
+            String repositoryUrl = findRepositoryUrl(repository);
+            repository.setRepositoryUrl(repositoryUrl);
         }
 
         return repository;
@@ -329,8 +343,6 @@ public class RepositoryServiceImpl implements RepositoryService {
     @Override
     public Repository findRepository(@NotNull String id) {
         Repository repository = findOne(id);
-
-        joinTemplate.joinQuery(repository);
 
         if (!ObjectUtils.isEmpty(repository)&&("maven").equals(repository.getType())&&("local").equals(repository.getRepositoryType())) {
             List<RepositoryMaven> mavenList = repositoryMavenService.findRepositoryMavenList(new RepositoryMavenQuery().setRepositoryId(repository.getId()));
@@ -351,8 +363,6 @@ public class RepositoryServiceImpl implements RepositoryService {
 
         List<Repository> repositoryList =  BeanMapper.mapList(repositoryEntityList,Repository.class);
 
-        joinTemplate.joinQuery(repositoryList);
-
         return repositoryList;
     }
 
@@ -369,8 +379,6 @@ public class RepositoryServiceImpl implements RepositoryService {
 
 
         findLibrary(list);
-
-        joinTemplate.joinQuery(repositoryList);
 
         return list;
     }
@@ -416,8 +424,6 @@ public class RepositoryServiceImpl implements RepositoryService {
 
         findLibrary(repositoryList);
 
-        joinTemplate.joinQuery(repositoryList);
-
         return repositoryList;
     }
 
@@ -431,8 +437,6 @@ public class RepositoryServiceImpl implements RepositoryService {
         Pagination<RepositoryEntity>  pagination = repositoryDao.findRepositoryPage(repositoryQuery);
 
         List<Repository> repositoryList = BeanMapper.mapList(pagination.getDataList(),Repository.class);
-
-        joinTemplate.joinQuery(repositoryList);
 
         findLibrary(repositoryList);
 
@@ -458,6 +462,22 @@ public class RepositoryServiceImpl implements RepositoryService {
             }
         }
         return localAndRemoteRepository;
+    }
+
+    @Override
+    public void updateRpmIndex(String repoId) {
+        String indexPath = yamlDataMaService.repositoryAddress() + "/" + repoId + HadessFinal.REPO_MD_PATH;
+        String fileListPath = yamlDataMaService.repositoryAddress() + "/" + repoId + HadessFinal.RPM_FILE_PATH;
+        String primaryPath = yamlDataMaService.repositoryAddress() + "/" + repoId + HadessFinal.RPM_PRIMARY_PATH;
+
+
+        Repository repository = this.findOne(repoId);
+        if (("local").equals(repository.getRepositoryType())){
+            List<LibraryFile> libraryFileList = libraryFileService.findLibraryFileByRep(new LibraryFileQuery().setRepositoryId(repoId));
+            if (CollectionUtils.isNotEmpty(libraryFileList)){
+
+            }
+        }
     }
 
 
@@ -496,9 +516,9 @@ public class RepositoryServiceImpl implements RepositoryService {
                        int i = parts.length - 1;
                        String s = StringUtils.substringAfter(visitAddress, "http://");
                        if (i==1){
-                           s=s + ":80/";
+                           s=s + ":80";
                        }
-                       absoluteAddress= s +repository.getRepositoryUrl();
+                       absoluteAddress= s +"/"+repository.getRepositoryUrl();
                    }
                    if (visitAddress.startsWith("https://")){
                        String s = StringUtils.substringAfter(visitAddress, "https://");
@@ -526,6 +546,12 @@ public class RepositoryServiceImpl implements RepositoryService {
                if (("nuget").equals(type)){
                    absoluteAddress=visitAddress + "/nuget/"+repository.getRepositoryUrl()+"/index.json";
                }
+               if (("conan").equals(type)){
+                   absoluteAddress=visitAddress + "/conan/"+repository.getRepositoryUrl();
+               }
+               if (("rpm").equals(type)){
+                   absoluteAddress=visitAddress + "/rpm/"+repository.getRepositoryUrl();
+               }
            }else {
                //若配置文件配置了地址就取配置的地址 没配置就获取服务器ip
                String serverIp = RepositoryUtil.getServerIp();
@@ -552,6 +578,12 @@ public class RepositoryServiceImpl implements RepositoryService {
                }
                if (("nuget").equals(type)){
                    absoluteAddress="http://" + serverIp + ":" + port +  "/nuget/"+repository.getRepositoryUrl()+"/index.json";
+               }
+               if (("conan").equals(type)){
+                   absoluteAddress="http://" + serverIp + ":" + port +  "/conan/"+repository.getRepositoryUrl();
+               }
+               if (("rpm").equals(type)){
+                   absoluteAddress="http://" + serverIp + ":" + port +  "/rpm/"+repository.getRepositoryUrl();
                }
            }
        }

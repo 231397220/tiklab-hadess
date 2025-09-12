@@ -67,7 +67,7 @@ public class RepositoryClusterCfgServiceImpl implements RepositoryClusterCfgServ
     public RepositoryClusterCfg findRepositoryClusterCfg(@NotNull String id) {
         RepositoryClusterCfg repositoryClusterCfg = findOne(id);
 
-        joinTemplate.joinQuery(repositoryClusterCfg);
+        joinTemplate.joinQuery(repositoryClusterCfg,new String[]{"repository","user"});
 
         return repositoryClusterCfg;
     }
@@ -78,7 +78,7 @@ public class RepositoryClusterCfgServiceImpl implements RepositoryClusterCfgServ
 
         List<RepositoryClusterCfg> repositoryClusterCfgList =  BeanMapper.mapList(repositoryClusterCfgEntityList,RepositoryClusterCfg.class);
 
-        joinTemplate.joinQuery(repositoryClusterCfgList);
+        joinTemplate.joinQuery(repositoryClusterCfgList,new String[]{"repository","user"});
 
         return repositoryClusterCfgList;
     }
@@ -89,7 +89,7 @@ public class RepositoryClusterCfgServiceImpl implements RepositoryClusterCfgServ
 
         List<RepositoryClusterCfg> repositoryClusterCfgList = BeanMapper.mapList(repositoryClusterCfgEntityList,RepositoryClusterCfg.class);
 
-        joinTemplate.joinQuery(repositoryClusterCfgList);
+        joinTemplate.joinQuery(repositoryClusterCfgList,new String[]{"repository","user"});
 
         return repositoryClusterCfgList;
     }
@@ -100,7 +100,7 @@ public class RepositoryClusterCfgServiceImpl implements RepositoryClusterCfgServ
 
         List<RepositoryClusterCfg> repositoryClusterCfgList = BeanMapper.mapList(pagination.getDataList(),RepositoryClusterCfg.class);
 
-        joinTemplate.joinQuery(repositoryClusterCfgList);
+        joinTemplate.joinQuery(repositoryClusterCfgList,new String[]{"repository","user"});
 
         return PaginationBuilder.build(pagination,repositoryClusterCfgList);
     }

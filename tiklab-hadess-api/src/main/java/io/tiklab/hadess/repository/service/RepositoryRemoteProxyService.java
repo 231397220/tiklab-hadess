@@ -95,4 +95,11 @@ public interface RepositoryRemoteProxyService {
      * @return
      */
     List<RepositoryRemoteProxy> findAgencyByRpyIds(String[] repositoryIds);
+
+    /**
+     * 同步rpm的索引文件
+     * @param repoId repoId
+     * @return
+     */
+    void syncRpmIndex(String repoId,String remoteId);
 }
