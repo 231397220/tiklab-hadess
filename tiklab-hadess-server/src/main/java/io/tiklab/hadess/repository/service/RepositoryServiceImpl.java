@@ -639,31 +639,36 @@ public class RepositoryServiceImpl implements RepositoryService {
      * @param  updateName 更新名字
      */
     public void initRepositoryMap(RepositoryEntity oldRepository, String type, String updateName){
+        Thread thread = new Thread() {
+            public void run() {
 
-        HashMap<String, Object> map = hadessMessageService.initMap();
+                HashMap<String, Object> map = hadessMessageService.initMap();
 
-        map.put("repositoryId",oldRepository.getId());
-        map.put("action",oldRepository.getName());
-        if (("delete").equals(type)){
-            map.put("message", "删除了制品库"+oldRepository.getName());
-            map.put("link", HadessFinal.LOG_RPY_DELETE);
-            hadessMessageService.settingMessage(map,HadessFinal.LOG_TYPE_DELETE);
-            hadessMessageService.settingLog(map,HadessFinal.LOG_TYPE_DELETE,"repository");
-        }
+                map.put("repositoryId",oldRepository.getId());
+                map.put("action",oldRepository.getName());
+                if (("delete").equals(type)){
+                    map.put("message", "删除了制品库"+oldRepository.getName());
+                    map.put("link", HadessFinal.LOG_RPY_DELETE);
+                    hadessMessageService.settingMessage(map,HadessFinal.LOG_TYPE_DELETE);
+                    hadessMessageService.settingLog(map,HadessFinal.LOG_TYPE_DELETE,"repository");
+                }
 
-        if (("update").equals(type)){
-            map.put("message", oldRepository.getName()+"更改为"+updateName);
-            map.put("link",HadessFinal.LOG_RPY_UPDATE);
+                if (("update").equals(type)){
+                    map.put("message", oldRepository.getName()+"更改为"+updateName);
+                    map.put("link",HadessFinal.LOG_RPY_UPDATE);
 
-            hadessMessageService.settingMessage(map,HadessFinal.LOG_TYPE_UPDATE);
-            hadessMessageService.settingLog(map,HadessFinal.LOG_TYPE_UPDATE,"repository");
-        }
+                    hadessMessageService.settingMessage(map,HadessFinal.LOG_TYPE_UPDATE);
+                    hadessMessageService.settingLog(map,HadessFinal.LOG_TYPE_UPDATE,"repository");
+                }
 
-        if (("create").equals(type)){
-            map.put("message", "创建了制品库"+oldRepository.getName());
-            map.put("link",HadessFinal.LOG_RPY_CREATE);
-            hadessMessageService.settingMessage(map,HadessFinal.LOG_TYPE_CREATE);
-            hadessMessageService.settingLog(map,HadessFinal.LOG_TYPE_CREATE,"repository");
-        }
+                if (("create").equals(type)){
+                    map.put("message", "创建了制品库"+oldRepository.getName());
+                    map.put("link",HadessFinal.LOG_RPY_CREATE);
+                    hadessMessageService.settingMessage(map,HadessFinal.LOG_TYPE_CREATE);
+                    hadessMessageService.settingLog(map,HadessFinal.LOG_TYPE_CREATE,"repository");
+                }
+            }};
+
+        thread.start();
     }
 }

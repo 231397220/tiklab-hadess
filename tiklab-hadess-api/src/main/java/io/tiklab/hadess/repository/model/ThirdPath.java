@@ -27,7 +27,7 @@ public class ThirdPath extends BaseModel {
     private String id;
 
     @NotNull
-    @ApiProperty(name="name",desc="名称",required = true)
+    @ApiProperty(name="name",desc="名称")
     private String name;
 
     @ApiProperty(name="address",desc="路径")

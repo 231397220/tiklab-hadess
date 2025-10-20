@@ -128,6 +128,12 @@ public class HadessDsmAutoConfiguration {
                 .get();
         versionList.add(dsmVersion);
 
+        dsmVersion = DsmVersionBuilder.instance()
+                .version("message_2.0.0")
+                .db(new String[]{
+                        "message_2.0.0",
+                }).get();
+        versionList.add(dsmVersion);
 
         return versionList;
     }
