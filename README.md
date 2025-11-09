@@ -36,6 +36,8 @@ cd tiklab-hadess
 </mirror> 
 ```
 
+> 注意：项目根目录下的 `pom.xml` 继承自父 POM `io.tiklab:tiklab-dependencies:1.0.2`。该父 POM 并未随代码一同提交，而是托管在上面配置的 Tiklab 私有仓库中。因此，在未配置对应仓库的环境中执行 Maven 命令会提示找不到父 POM。这属于正常现象，按照上述步骤配置仓库即可解决。
+
 ### 构建项目
 
    * MAC系统：mvn clean package -P system-mac,env-dev
