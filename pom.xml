@@ -55,7 +55,7 @@
         <tiklab-install.version>1.0.2</tiklab-install.version>
         <!--other-->
         <jdbc-mapper.version>1.2.2</jdbc-mapper.version>
-        <commons-net.version>3.5</commons-net.version>
+        <commons-net.version>3.9.0</commons-net.version>
         <webhook-sdk.version>1.0.7</webhook-sdk.version>
         <quartz.version>2.3.2</quartz.version>
         <quartz-spring-boot.version>3.1.1</quartz-spring-boot.version>
